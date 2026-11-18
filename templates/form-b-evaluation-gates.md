@@ -81,7 +81,7 @@ Ba loại lỗi:
 
 | # | Lỗi: người ta thấy gì (dán dòng trace / sổ cái) | Ai gặp, ai chịu | Hệ trọng (thấp / cao) | Loại lỗi (giới hạn hệ thống / ngữ cảnh / chìm) |
 |---|---|---|---|---|
-| 1 | Trace `T-002@55`: `model_override` đổi `db=2` thành `ticket=5`; `proposal` 20.000đ; `issue_refund` + `file_carrier_fault` cho VNX với `delay_days=5`; khách nhận thông báo đã hoàn. | Khách được hoàn sai; LogiX chịu tiền và VNX chịu lỗi ghi oan. | Cao | Lỗi chìm: hành động sai được ghi và thông báo như bình thường. |
+| 1 | Trace `T-002@55`: `model_override` đổi `db=2` thành `ticket=5`; `proposal` 20.000đ; sổ cái ghi hoàn 20.000đ và khách nhận “đã hoàn”, trong khi nhãn yêu cầu từ chối và hoàn 0đ. | LogiX chịu khoản hoàn sai; khách nhận tiền không đúng kết quả theo nhãn. | Cao | Lỗi chìm: khoản hoàn được ghi và thông báo như bình thường, không có cảnh báo trong luồng. |
 | 2 | `file_carrier_fault` ghi lỗi cho VNX với `delay_days=5`; tracking thực tế ghi 2 ngày. | Hãng VNX chịu lỗi ghi oan; LogiX có thể phát sinh tranh chấp với hãng. | Cao | Lỗi chìm: lỗi hãng được ghi và gửi đi như dữ kiện đã xác minh. |
 
 ### Phần 2 · Tìm nguồn (đánh dấu câu nào đúng với từng lỗi)
