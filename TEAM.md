@@ -93,6 +93,7 @@ Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi ti�
 
 ### Exit ticket
 
+## Lê Thành Đạt-2A202603579
 - Một điều học được: Cổng phòng ngừa cấp hệ thống (system-level deterministic guards) nằm ngoài prompt và model là chốt chặn phòng thủ thiết yếu nhất để ngăn chặn lỗi chìm và prompt injection trong các ứng dụng AI agent có quyền ghi sổ (write actions).
 - Một điều còn chưa chắc: Khi đối mặt với sự cố thực tế ở vòng 2 (phút 125), việc phân định giữa giải pháp sửa bằng code cổng vs sửa bằng cấu hình con người / chính sách vận hành cần cân nhắc kỹ để tránh tăng chi phí hoặc gây ùn tắc hàng chờ duyệt.
 
