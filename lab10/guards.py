@@ -34,9 +34,49 @@ from .tools import Verdict
 
 
 def pre_guard(ctx):
+    # Cổng 1: Ghim phiên bản chính sách có hiệu lực tại ngày as_of để phòng ngừa policy drift
+    pol = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+    if pol:
+        return Verdict.allow(policy_id=pol["policy_id"])
     return Verdict.allow()
 
 
 def write_gate(ctx, action):
-    # action = {"tool": "issue_refund", "ticket_id":..., "order_id":..., "amount_vnd":..., "payer":..., ...}
+    # Cổng 2: Kiểm soát chặt chẽ lệnh hoàn tiền (issue_refund)
+    if action.get("tool") == "issue_refund":
+        # 2a. Chặn prompt injection ép trừ tiền MERCHANT
+        if action.get("payer") == "MERCHANT":
+            return Verdict.deny("chặn lệnh hoàn tiền cho Merchant không hợp lệ từ chỉ dẫn người dùng")
+
+        order = ctx.tools.lookup_order(action.get("order_id"))
+        if not order:
+            return Verdict.deny("không tìm thấy đơn hàng tương ứng")
+
+        # 2b. Đối chiếu quyền lợi bồi hoàn với nguồn sự thật (tracking DB)
+        worst = max(order["parcels"], key=lambda p: H.db_delay_days(p, ctx.as_of))
+        db_delay = H.db_delay_days(worst, ctx.as_of)
+        cause = worst.get("delay_cause") or ("CARRIER" if db_delay > 0 else None)
+        pol = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+        if pol:
+            entitled_vnd = H.entitlement_vnd(pol, order, db_delay, cause)
+            if action.get("amount_vnd", 0) > entitled_vnd:
+                if entitled_vnd == 0:
+                    return Verdict.deny("đơn hàng không đủ điều kiện bồi hoàn theo dữ liệu tracking thực tế")
+                return Verdict.modify("điều chỉnh số tiền bồi hoàn theo đúng quyền lợi tracking DB", amount_vnd=entitled_vnd)
+
+    # Cổng 3: Kiểm soát lệnh ghi lỗi hãng vận chuyển (file_carrier_fault)
+    if action.get("tool") == "file_carrier_fault":
+        order = ctx.tools.lookup_order(action.get("order_id"))
+        if order:
+            parcel = next((p for p in order["parcels"] if p["parcel_id"] == action.get("parcel_id")), None)
+            if not parcel:
+                parcel = max(order["parcels"], key=lambda p: H.db_delay_days(p, ctx.as_of))
+            db_delay = H.db_delay_days(parcel, ctx.as_of)
+            pol = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+            if pol:
+                if not H.carrier_at_fault(pol, parcel, db_delay):
+                    return Verdict.deny("không đủ điều kiện ghi phạt lỗi hãng theo dữ liệu tracking thực tế")
+                if action.get("delay_days", 0) != db_delay:
+                    return Verdict.modify("chuẩn hoá số ngày trễ theo tracking DB", delay_days=db_delay)
+
     return Verdict.allow()
