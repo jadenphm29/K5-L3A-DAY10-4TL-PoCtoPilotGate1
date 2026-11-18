@@ -13,10 +13,10 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; thêm dòng nếu 
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 | Nguyễn Trọng Hưởng | 2A202603626 | Sản phẩm và kinh doanh | x |
+|   1 | Nguyễn Trọng Hưởng | 2A202603626 | Sản phẩm và kinh doanh |  |
 |   2 | Trần Minh Tân | 2A202603688 | Kỹ sư cổng 1 | |
 |   3 | Phạm Tiến Đạt | | Kỹ sư cổng 2 | |
-|   4 | Trần Văn Quân | | Vận hành và pháp lý | |
+|   4 | Phạm Ngọc Trung Quân | 2A202603626| Vận hành và pháp lý |x |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
@@ -94,3 +94,41 @@ Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi ti�
 
 - Một điều học được: Cổng phòng ngừa cấp hệ thống (system-level deterministic guards) nằm ngoài prompt và model là chốt chặn phòng thủ thiết yếu nhất để ngăn chặn lỗi chìm và prompt injection trong các ứng dụng AI agent có quyền ghi sổ (write actions).
 - Một điều còn chưa chắc: Khi đối mặt với sự cố thực tế ở vòng 2 (phút 125), việc phân định giữa giải pháp sửa bằng code cổng vs sửa bằng cấu hình con người / chính sách vận hành cần cân nhắc kỹ để tránh tăng chi phí hoặc gây ùn tắc hàng chờ duyệt.
+
+## PhamNgocTrungQuan-2A202603626
+
+### Phần việc phụ trách
+
+- Vai trong bàn: Vận hành và pháp lý (Operations & Legal Lead).
+- Phụ trách chính:
+  + Phân tích góc nhìn Chị Oanh (kế toán đối soát) và Chị Hạnh (trưởng ca CSKH): Phiếu A mục A1 (Câu 1.2).
+  + Thiết kế hệ thống Telemetry production không nhãn và ngưỡng cảnh báo: Phiếu A mục A2 (Câu 1.4).
+  + Phân tích an toàn mở rộng HAZOP (trên tool `issue_refund` và các khía cạnh phi kỹ thuật): Phiếu B mục B4 (Câu 2.4).
+  + Xây dựng và theo dõi Checklist 9 nhóm việc go-live có phân định PIC: Phiếu B mục B5 (Câu 2.4).
+  + Cùng nhóm tham gia Pre-mortem bốn lăng kính, chủ trì lăng kính Vận hành và Pháp lý: Phiếu B mục B6 (Câu 2.5).
+  + Cấu hình các cổng kiểm soát con người, vận hành và pháp lý trong `config/operating_gates.json` (mục `operations` và `legal`): Câu 2.10.
+  + Soạn thảo Runbook hoàn chỉnh phần 1–3 và phương án xử lý tải đột biến Giờ cao điểm: Phiếu B mục B7.5 & B7.6 (Câu 2.10).
+  + Quản lý hồ sơ nộp bài và các file dữ liệu cấu hình pháp lý: `submission/submission.json`.
+
+### Đóng góp cụ thể
+
+- Hoàn thiện phân tích HAZOP mở rộng phát hiện các nguy cơ vượt công suất duyệt ca trực (14 ca/giờ) và nguy cơ rò rỉ dữ liệu cá nhân (PII) sang bên thứ ba theo Nghị định 13/2023/NĐ-CP.
+- Phối hợp thiết lập thành công các cổng cấu hình vận hành và pháp lý trong `config/operating_gates.json`:
+  1. `operations.pic`: `"NV-TUNG"` (Lê Thanh Tùng - Giám sát vận hành)
+  2. `operations.approver_id`: `"NV-HANH"` (Trần Thị Hạnh - Trưởng ca CSKH)
+  3. `operations.reviewers_on_shift`: 1 reviewer với SLA xử lý 60 phút
+  4. `legal.pii_fields_blocked_to_third_party`: chặn trường `customer_note` và `recipient_contact` khi gọi đối tác vận chuyển
+  5. `legal.carrier_fault_requires_recorded_cause`: bắt buộc có nguyên nhân trễ `CARRIER` mới cho phép phạt hãng.
+- Xây dựng Runbook 1–3 chi tiết với 7 tín hiệu giám sát trọng yếu (thời gian chờ, ca ùn, chi phí, trần tiền ngày, tiền hoàn sai, lỗi hãng oan, PII) và ma trận phân quyền khẩn cấp.
+- Xây dựng kịch bản Giờ cao điểm (18–20 ticket/h), đảm bảo thời gian chờ không vượt SLA và duy trì ROI > 1.0.
+
+### Bằng chứng
+
+- Cấu hình vận hành và pháp lý: `config/operating_gates.json` (mục `operations` và `legal`), đã chốt vào `config/operating_gates.round1.json` (hash `113ffb04`).
+- Nội dung các mục: Phiếu A (A1 câu 1.2, A2 câu 1.4), Phiếu B (B4 HAZOP, B5 Checklist 9 nhóm việc, B6 Pre-mortem, B7.5 Runbook 1–3, B7.6 Giờ cao điểm).
+- Mã lần chạy prepared đạt chuẩn 0 lỗi pháp lý, 0 ca ùn: `R-base-prepared-20261118-173351-f46094`.
+
+### Exit ticket
+
+- Một điều học được: Một hệ thống AI agent trong doanh nghiệp không thể chỉ đánh giá bằng độ chính xác của model (accuracy/pass_rate), mà sống còn ở tầng kiểm soát vận hành, pháp lý bảo vệ dữ liệu cá nhân (PII), trần tài chính và quy trình con người xử lý ngoại lệ (human-in-the-loop).
+- Một điều còn chưa chắc: Khi có sự cố phức tạp ở vòng 2 phát sinh từ bên thứ ba (hãng vận chuyển hoặc đối tác thanh toán), việc cân bằng giữa tốc độ giải quyết khiếu nại của khách với thủ tục xác minh lỗi đối soát cần được quy định rành mạch hơn trong hợp đồng SLA đối tác.
