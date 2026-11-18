@@ -1,6 +1,6 @@
 # Phiếu C · Sự cố và quyết định v2 · Khối 3 (phút 125–200)
 
-**Bàn:** ______ · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
+**Bàn:** K5-L3A-DAY10-4TL-PoCtoPilotGate1 · **Thẻ đã bốc:** S4 *(Lab Coach đối chiếu với sổ.)*
 
 Mở `incidents/Sx/card.md` của đúng số đã bốc. Các bước trên thẻ trỏ về đúng mục trong phiếu này. Mục C3 chỉ điền phần ứng với
 số thẻ của bàn; các phần khác để trống.
@@ -30,8 +30,8 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | | Sx · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | | | | | |
-| 2 | | Sx · after | | | | | | |
+| 1 | `R-S4-prepared-20261118-174209-b1fbdc` | S4 · prepared | Ghim policy; đối chiếu refund/fault với DB; decision note và recheck mẫu 10% | 1.0 [1.0, 1.0] | 1.0 | 0đ · 0 lỗi · 0 | 0.3902 | Ticket đều đạt, nhưng còn 5 ca ùn và tổng hoàn tự động vượt ngân sách ngày sale. |
+| 2 | `R-S4-after-20261118-174209-b1fbdc` | S4 · after | Bản hiện tại giống cổng vòng 1; monitor `policy_fail_open_rate` được đăng ký | 1.0 [1.0, 1.0] | 1.0 | 0đ · 0 lỗi · 0 | 0.3902 | Không có thay đổi hành vi so với prepared; monitor phát hiện fail-open. |
 | 3 | | Sx · after | | | | | | |
 | 4 | | base · after | (kiểm không regression) | | | | | |
 
@@ -47,19 +47,21 @@ Chạy **trước khi sửa bất cứ thứ gì**:
 python3 -m lab10.grade --incident Sx
 ```
 
-- Mã lần chạy grade: `__________` · base: `__________` · prepared: `__________`
-- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): …
-- Khối kinh doanh và vận hành còn dòng nào vượt trần: …
+- Mã lần chạy grade: `R-S4-grade-20261118-174208-b1fbdc` · base: `R-S4-before-20261118-174209-b1fbdc` · prepared: `R-S4-prepared-20261118-174209-b1fbdc`.
+- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): pass_rate 0.8683→1.0; pass_k 0.6829→1.0; hoàn sai 160.000đ→0; lỗi hãng oan 27→0; PII giữ 0.
+- Khối kinh doanh và vận hành còn dòng nào vượt trần: 5 ca ùn, chờ lâu nhất 82 phút > SLA 60; tổng hoàn tự động 422.000đ > ngân sách ngày sale 300.000đ. Tỉ lệ recheck 10% làm hàng chờ tăng so với base.
+
+> **Ghi chú kiểm chứng:** checkpoint prepared đã verify, nhưng report vẫn chưa hợp lệ để chốt vì integrity/criteria hash báo sai trên Windows (`core.autocrlf=true`, grader băm byte thô) và máy chỉ có gói S4 trong khi manifest liệt kê S1–S8. Nội dung tiêu chí sau chuẩn hóa CRLF khớp lock; không sửa tiêu chí/lock. Cần xác nhận cách đồng bộ line ending và card với Coach.
 
 **Mở lại pre-mortem (Phiếu B mục B6), viết bằng bút khác màu.** Với thẻ S1, S3, S4, S5 đây là một phần của phần riêng theo thẻ.
 
-- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? …
-- Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? …
+- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? Kỹ thuật, kinh doanh, con người và vận hành.
+- Có nằm trong các lý do bàn đã viết không? Không thấy được ghi cụ thể trong B6 (các dòng lý do vẫn trống). Cổng vòng 1 xử lý được lỗi policy/fault: pass_rate 0.8683→1.0, hoàn sai 160.000đ→0, lỗi hãng oan 27→0; chưa xử lý được quá tải và ngân sách ngày sale.
 - Lý do còn thiếu, thêm bây giờ:
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được bằng gì (trace / data / config nào) |
 |---|---|---|
-| | | |
+| Policy check đã lỗi hai lần nhưng fallback vẫn tự hoàn/gán lỗi hãng; đồng thời tải giờ sale vượt sức chứa một reviewer và trần Finance. | Kỹ thuật · kinh doanh · con người/vận hành | `S4-05@11`, `S4-08@11`; report prepared: 5 ca ùn, 82 phút, hoàn 422.000đ > 300.000đ. |
 
 ---
 
@@ -76,33 +78,33 @@ python3 -m lab10.trace --suite Sx --ticket <ID> --seed 11
 Ba loại lỗi: **giới hạn của hệ thống** · **lỗi ngữ cảnh** · **lỗi chìm** (cả người dùng lẫn hệ thống đều không nhận ra; nguy hiểm nhất,
 người chịu hại thường là bên thứ ba). Định nghĩa đầy đủ và ví dụ: Phiếu B mục B2.
 
-**Tác hại của thẻ:** cho ai `____` · đo bằng gì `____` · bao nhiêu ở mốc base `____`
+**Tác hại của thẻ:** khách, LogiX, hãng vận chuyển và đội vận hành · đo bằng hoàn sai, lỗi hãng oan, tiền hoàn tự động và hàng chờ · report baseline tạm: 160.000đ hoàn sai, 27 lỗi hãng oan, 4 ca ùn; hoàn tự động 466.000đ so với ngân sách 300.000đ.
 
 ### Phần 1 · Ghi lỗi (bằng chứng là mã ticket@seed và dòng trace, không tả chung chung)
 
 | # | Lỗi: người ta thấy gì (dán dòng trace / sổ cái) | Ai gặp, ai chịu | Hệ trọng (thấp / cao) | Loại lỗi (giới hạn hệ thống / ngữ cảnh / chìm) |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| 1 | `S4-05@11`: hai lần `llm_error` khi `policy_check`, sau đó `llm_fallback mode=fail_open`; proposal/ledger hoàn 18.000đ dù tracking trễ 1 ngày (policy cần ≥3), đồng thời báo khách đã hoàn. | Khách, LogiX; hoàn sai 18.000đ. | Cao | Lỗi chìm: luồng báo hoàn thành, không báo rằng policy check thất bại. |
+| 2 | `S4-08@11`: tracking ghi `cause=MERCHANT_HANDOVER`; sau hai lỗi policy check, fallback `fail_open` đặt `do_fault=true`, ghi lỗi VNX với 4 ngày dù label yêu cầu `faults=[]`. | Hãng VNX và LogiX; hãng bị ghi lỗi oan. | Cao | Lỗi chìm: nguyên nhân giao hàng đã có trong tracking nhưng vẫn ghi lỗi hãng. |
+| 3 | Report S4: 1 người duyệt, công suất 6 ca/giờ; hàng chờ lâu nhất 78 phút và có 4 ca ùn quá SLA 60 phút. | Khách chờ xử lý và nhân viên duyệt; rủi ro bỏ sót/đọng ticket. | Cao | Lỗi vận hành nhìn thấy qua hàng chờ/report; chưa có monitor/ngưỡng cảnh báo vận hành riêng. |
 
 ### Phần 2 · Tìm nguồn (đánh dấu câu nào đúng với từng lỗi)
 
 | Câu hỏi | Lỗi 1 | Lỗi 2 | Lỗi 3 |
 |---|---|---|---|
-| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | | | |
-| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | | | |
-| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | | | |
-| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | | | |
+| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | Không; ticket không chứa số trễ hay chỉ dẫn gây lỗi. | Không; ticket chỉ xin hoàn phí, không yêu cầu đổ lỗi hãng. | Không áp dụng; quá tải đến từ nhịp ticket và nhân lực. |
+| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | Tracking đủ: trễ 1 ngày; policy v3 có ngưỡng 3 ngày, nhưng fallback bỏ qua policy. | Tracking đủ: `MERCHANT_HANDOVER`; quy tắc fault cause không được giữ khi fallback. | Sức chứa vận hành không đủ cho lượng ticket dồn; không thiếu dữ liệu đơn hàng. |
+| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | Chưa thấy bằng chứng về ghi trùng. | Chưa thấy bằng chứng về ghi trùng. | Chưa thấy hai hệ thống cùng ghi; vấn đề là công suất người duyệt không theo kịp lượng ticket. |
+| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | Có: hai lần 429 làm policy check không hoàn tất; hệ thống chọn fail-open thay vì dừng/chuyển người. | Có: cùng trạng thái fail-open biến `do_fault` thành true dù nguyên nhân không thuộc hãng. | Có giới hạn năng lực người: 1 người × 6 ca/giờ không xử lý hết đỉnh tải. |
 
 ### Phần 3 · Hướng xử lý (mỗi lỗi một ô)
 
 | | Lỗi 1 | Lỗi 2 | Lỗi 3 |
 |---|---|---|---|
-| Vì sao người gặp coi đây là lỗi | | | |
-| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | | | |
-| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | | | |
-| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | | | |
+| Vì sao người gặp coi đây là lỗi | Chính sách không cho hoàn ở 1 ngày trễ nhưng sổ cái ghi 18.000đ. | Hãng bị gán lỗi dù tracking xác định shop bàn giao muộn. | Có 4 ticket vượt SLA; khách và nhân viên phải chờ quá lâu. |
+| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | Khi policy check lỗi sau retry thì fail-closed/escalate, không hoàn tự động. | Cổng ghi fault bắt buộc cause thuộc policy và có trong tracking; nếu không thì deny/escalate. | Quy trình gọi thêm người/thu hẹp pilot theo tải; giữ trần chờ và ngân sách. |
+| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Ticket vào hàng chờ → nhân viên kiểm policy/tracking → duyệt/từ chối → trả lời khách. | Chuyển Ops xác minh trách nhiệm → chỉ ghi lỗi nếu đủ điều kiện → phản hồi hãng. | PIC nhận cảnh báo → gọi thêm người hoặc thu hẹp/tắt → xử lý hàng chờ theo runbook. |
+| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | Tỷ lệ trial có `llm_fallback` ở policy check (`policy_fail_open_rate`). | Cùng metric fail-open; đối chiếu thêm số fault không thuộc `fault_causes`. | `queue_stuck`, `queue_wait_max_min` và số người/công suất duyệt từ report. |
 
 Yêu cầu: ít nhất **hai lỗi có nguồn khác nhau** ở phần 2, và ít nhất một lỗi được xếp đúng là **lỗi chìm**.
 
@@ -221,7 +223,6 @@ Mở lại Phiếu B mục B3. Ghi ở đây những dòng đổi so với vòng
 | Trường / bảng | Vòng 1 bàn đã coi là (nguồn sự thật / bản sao / chưa hỏi) | Sau khi đọc thẻ thì thấy | Ảnh hưởng tới tiền hay lỗi hãng thế nào |
 |---|---|---|---|
 | | | | |
-| | | | |
 
 ---
 
@@ -278,21 +279,21 @@ thường biến một nhánh HOẶC thành VÀ: tác hại chỉ còn xảy ra 
 Ít nhất hai nhánh ở hai tầng khác nhau (kỹ thuật, kinh doanh, con người); mỗi lá có bằng chứng (ticket@seed, trường dữ liệu, hoặc một dòng của report).
 
 ```
-[ĐỈNH] Tác hại: ______________________________ (cho ai: __________, đo bằng: __________)
+[ĐỈNH] Tác hại: ngày sale gây hại khách/LogiX/hãng và ùn vận hành (cho ai: khách, LogiX, hãng, người duyệt; đo bằng: hoàn sai, lỗi hãng oan, tổng hoàn/ngân sách, ca ùn)
  └─ HOẶC
- ├─ [1] ______________________________ tầng: đầu vào / data / hành động / quyền hạn / vận hành / kinh doanh
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- ├─ [2] ______________________________ tầng: ______
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- └─ [3] ______________________________ tầng: ______
- └─ vì: ________________________ bằng chứng: ______
+ ├─ [1] Hoàn tiền không đủ điều kiện tầng: hành động / trạng thái hỏng
+ │ └─ vì: policy check 429 hai lần rồi fail-open; hoàn 18.000đ dù trễ 1 ngày (<3 ngày) bằng chứng: ticket S4-05@seed 11
+ ├─ [2] Ghi lỗi sai cho hãng tầng: data / hành động
+ │ └─ vì: fail-open đặt do_fault=true, bỏ qua cause MERCHANT_HANDOVER bằng chứng: ticket S4-08@seed 11
+ └─ [3] Hàng chờ vượt SLA và hoàn tự động vượt ngân sách tầng: vận hành / kinh doanh
+ └─ vì: 1 người duyệt 6 ca/giờ; 4 ca ùn, chờ tối đa 78 phút; hoàn 466.000đ > 300.000đ bằng chứng: report S4 `R-S4-grade-20261118-165802-ae5895`
 ```
 
 | Lá | Specification bị vi phạm (phần mềm phải làm gì) | Giả định môi trường đã sai (thế giới ngoài phần mềm) |
 |---|---|---|
-| [1] | | |
-| [2] | | |
-| [3] | | |
+| [1] | Khi policy check lỗi sau retry, không được ghi hoàn tự động dựa trên fail-open; phải chuyển người. | Nhà cung cấp policy/LLM sẽ phản hồi được hoặc fallback luôn an toàn. |
+| [2] | Chỉ ghi lỗi hãng khi cause tracking được ghi nhận và thuộc `fault_causes` của policy. | Mọi đơn trễ đều do hãng vận chuyển chịu trách nhiệm. |
+| [3] | Hàng chờ phải trong SLA; tổng hoàn tự động không vượt ngân sách ngày Finance đã thống nhất. | Lượng ticket gần như ổn định và một reviewer đủ sức xử lý giờ cao điểm. |
 
 **Ví dụ mẫu một nhánh (bộ nền, đừng chép):** đỉnh "hãng VNX nhận lỗi oan cho đơn O-1002" ← [1] agent dùng độ trễ 5 ngày ←
 model lấy số trong ticket đè lên DB (`T-002@55`). Spec bị vi phạm: độ trễ dùng để ghi lỗi phải lấy từ tracking DB. Giả định
@@ -330,14 +331,14 @@ Thẻ S5 dùng mục này cho một con số kinh doanh: chi phí mỗi ticket t
 
 | | Chỉ số theo dõi mới của bàn |
 |---|---|
-| **Tên trong `MONITORS`** | |
-| **Bước / hành vi được đo** | |
-| **Thước đo** (một câu, có đơn vị) | |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |
-| **Khung thời gian / ngưỡng báo động** | |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | |
+| **Tên trong `MONITORS`** | `policy_fail_open_rate` |
+| **Bước / hành vi được đo** | Policy check lỗi và agent rơi vào fallback `fail_open`. |
+| **Thước đo** (một câu, có đơn vị) | Tỷ lệ trial có fallback fail-open trên tổng trial, đơn vị tỷ lệ 0–1. |
+| **Dữ liệu** (trường nào của trial, không có nhãn) | `events`: event `type=llm_fallback`, `purpose=policy_check`, `mode=fail_open`; không đọc `label`/pass-fail. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Số trial có ít nhất một event trên / tổng trial; không có trial thì trả 0. |
+| **Khung thời gian / ngưỡng báo động** | Mỗi lượt đánh giá/ngày vận hành; báo đỏ khi >0 vì mọi policy fail-open đều cần xem xét. |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không đo được hoàn sai nếu không có fail-open, không phát hiện chính sách/tracking sai hoặc hàng chờ ùn. |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | 0.0 · 0.185366 (38/205 trial); report `R-S4-grade-20261118-174208-b1fbdc` (monitor ✅; overall grade còn lỗi hash/integrity). |
 
 ---
 
