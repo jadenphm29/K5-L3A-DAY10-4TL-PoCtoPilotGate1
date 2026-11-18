@@ -15,11 +15,21 @@ tức là monitor "sáng đèn" khi sự cố xảy ra.
 """
 
 
+def policy_fail_open_rate(trials):
+    """Share of ticket trials where a failed policy check fell back to fail-open."""
+    return sum(
+        any(e.get("type") == "llm_fallback" and e.get("purpose") == "policy_check"
+            and e.get("mode") == "fail_open" for e in t.get("events", []))
+        for t in trials
+    ) / max(1, len(trials))
+
+
 def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "policy_fail_open_rate": policy_fail_open_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
