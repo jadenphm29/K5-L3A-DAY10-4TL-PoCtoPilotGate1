@@ -1,8 +1,13 @@
 {
-  "team": "",
-  "members": [],
+  "team": "K5-L3A-DAY10-4TL-PoCtoPilotGate1",
+  "members": [
+    "NguyenTrongHuong-2A202603626",
+    "TranMinhTan-2A202603688",
+    "PhamTienDat",
+    "PhamNgocTrungQuan-2A202603626"
+  ],
   "incident": "",
-  "decision_v1": "",
+  "decision_v1": "Tiếp tục",
   "decision_v2": "",
   "three_lines": {
     "environment_assumption": "",
