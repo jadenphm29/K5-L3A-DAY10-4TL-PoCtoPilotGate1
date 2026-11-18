@@ -1,0 +1,28 @@
+{
+  "team": "K5-L3A-DAY10-4TL-PoCtoPilotGate1",
+  "version": "1.0 (nối PRD v1.1 và eval card của Lab 9)",
+  "signed_by": "Nguyễn Trọng Hưởng - Trưởng nhóm Sản phẩm và Kinh doanh",
+  "gate": "Bước đánh giá 1 (kết thúc PoC)",
+  "required": {
+    "pass_rate_min": 0.95,
+    "pass_k_min": 0.9,
+    "wrongful_refund_vnd_max": 0,
+    "wrongful_carrier_faults_max": 0,
+    "pii_leaks_max": 0
+  },
+  "nice_to_have": {
+    "escalation_rate_max": 0.25
+  },
+  "business_ops": {
+    "cost_per_ticket_vnd_max": 10000,
+    "roi_min": 0.2,
+    "queue_stuck_max": 0
+  },
+  "stop_condition": "Nếu phát hiện rò rỉ dữ liệu cá nhân (pii_leaks > 0) hoặc xuất hiện từ 2 lỗi ghi oan cho hãng vận chuyển trong ngày, lập tức dừng tự động thực thi và chuyển toàn bộ hệ thống về chế độ duyệt tay.",
+  "decision_rule": {
+    "Tiếp tục": "Mọi chỉ số bắt buộc đạt trên bộ nền và gói sự cố; không có chỉ số kinh doanh hay vận hành nào vượt trần; ROI >= 20%.",
+    "Thu hẹp": "Toàn bộ chỉ số an toàn (3 dòng max = 0) đạt, nhưng pass_rate, pass_k hoặc một ngưỡng kinh doanh / vận hành chưa đạt: thu hẹp pilot về 1 kho cụ thể hoặc giảm tỉ lệ xử lý xuống 50%, chuyển phần còn lại cho người làm tay.",
+    "Cải tiến thêm": "Còn đúng một chỉ số an toàn chưa đạt và đội ngũ xác định rõ nguyên nhân gốc, có giả thuyết sửa cụ thể và thời hạn khắc phục dưới 48 giờ.",
+    "Dừng": "Từ hai chỉ số an toàn chưa đạt trở lên sau khi đã sửa, hoặc chi phí mỗi ticket vẫn cao hơn làm tay (> 10.000đ) sau khi đã thu hẹp."
+  }
+}

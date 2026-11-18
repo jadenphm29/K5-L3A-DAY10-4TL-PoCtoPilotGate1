@@ -3,15 +3,15 @@
   "members": [
     "NguyenTrongHuong-2A202603626",
     "TranMinhTan-2A202603688",
-    "PhamTienDat",
+    "LeThanhDat-2A202603579",
     "PhamNgocTrungQuan-2A202603626"
   ],
-  "incident": "",
+  "incident": "S4",
   "decision_v1": "Tiếp tục",
-  "decision_v2": "",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Giả định rằng lưu lượng khiếu nại giao hàng phân bổ tương đối đồng đều trong ngày và nhà cung cấp dịch vụ LLM luôn duy trì độ sẵn sàng 100% không bị nghẽn rate limit 429 vào các khung giờ cao điểm.",
+    "reduce_or_prevent": "Cổng của đội thực sự NGĂN được tác hại vì lệnh ghi sổ bắt buộc đối chiếu quyền lợi với tracking DB và áp trần ngân sách ngày cứng 300.000đ, không phụ thuộc vào trạng thái lỗi hay fallback fail-open của LLM.",
+    "measure_in_pilot": "Cần đo lại độ trễ thực tế của bưu tá khi quét mã phát hàng và tần suất lỗi 429 của API LLM vào các khung giờ vàng 20h–22h trên 2 depot thử nghiệm trước khi mở rộng toàn quốc."
   }
 }

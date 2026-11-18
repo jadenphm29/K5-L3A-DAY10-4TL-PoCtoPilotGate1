@@ -57,12 +57,26 @@ def write_gate(ctx, action):
         db_delay = H.db_delay_days(worst, ctx.as_of)
         cause = worst.get("delay_cause") or ("CARRIER" if db_delay > 0 else None)
         pol = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+        final_amount = action.get("amount_vnd", 0)
         if pol:
             entitled_vnd = H.entitlement_vnd(pol, order, db_delay, cause)
             if action.get("amount_vnd", 0) > entitled_vnd:
                 if entitled_vnd == 0:
                     return Verdict.deny("đơn hàng không đủ điều kiện bồi hoàn theo dữ liệu tracking thực tế")
-                return Verdict.modify("điều chỉnh số tiền bồi hoàn theo đúng quyền lợi tracking DB", amount_vnd=entitled_vnd)
+                final_amount = entitled_vnd
+
+        # 2c. Kiểm soát trần hoàn tiền tự động trong ngày (ngân sách Finance)
+        cap = (ctx.gates or {}).get("business", {}).get("daily_refund_cap_vnd")
+        limit_cap = ctx.tools.ops_limits().get("daily_auto_refund_budget_vnd")
+        if limit_cap is not None:
+            cap = min(cap, limit_cap) if cap is not None else limit_cap
+        if cap is not None:
+            spent = ctx.tools.auto_refund_today_vnd()
+            if spent + final_amount > cap:
+                return Verdict.escalate("vượt trần ngân sách hoàn tự động trong ngày, chuyển người duyệt")
+
+        if final_amount != action.get("amount_vnd", 0):
+            return Verdict.modify("điều chỉnh số tiền bồi hoàn theo đúng quyền lợi tracking DB", amount_vnd=final_amount)
 
     # Cổng 3: Kiểm soát lệnh ghi lỗi hãng vận chuyển (file_carrier_fault)
     if action.get("tool") == "file_carrier_fault":
