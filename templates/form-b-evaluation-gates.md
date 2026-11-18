@@ -1,6 +1,6 @@
 # Phiếu B · Đo, rủi ro, cổng vòng 1 và quyết định v1 · Khối 2A + 2B + chốt (phút 65–115)
 
-**Bàn:** ______
+**Bàn:** K5-L3A-DAY10-4TL-PoCtoPilotGate1
 
 Tiêu chí đã ký ở Phiếu A. Từ phút 65 bàn mới được chạy trợ lý. Khối 2A (65–85) chưa sửa code hay config. Khối 2B (85–105) sửa
 `lab10/guards.py` và `config/operating_gates.json`. Phút 105–115 chốt cổng vòng 1 rồi viết quyết định v1. Sau phút 115 không sửa phiếu này
@@ -120,24 +120,24 @@ Gợi ý: mở `data/world.json` phần `policies`, `orders[].parcels`, `ops_lim
 
 | Mục | Điền cho trợ lý hoàn tiền |
 |---|---|
-| Người dùng | |
-| Việc người dùng cần làm xong | |
-| Đầu ra của hệ thống (kể cả các lệnh ghi) | |
-| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | |
-| Trường then chốt quyết định tiền và lỗi hãng | |
-| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | |
-| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | |
-| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | |
-| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | |
+| Người dùng | Khách hàng mua hàng gặp đơn hàng bị giao trễ so với ngày cam kết, gửi khiếu nại yêu cầu bồi hoàn cước vận chuyển và giá trị hàng. |
+| Việc người dùng cần làm xong | Thẩm định yêu cầu bồi hoàn và nhận tiền hoàn nhanh chóng (dưới 5 phút) mà không phải qua nhiều vòng xử lý CSKH thủ công. |
+| Đầu ra của hệ thống (kể cả các lệnh ghi) | Lệnh ghi sổ cái (`issue_refund`), phạt lỗi hãng vận chuyển (`file_carrier_fault`), gửi cảnh báo cho hãng (`notify_carrier`), tin nhắn phản hồi khách (`send_reply`). |
+| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | `orders` (chi tiết đơn, phí ship, giá trị hàng), `parcels` (ngày cam kết, ngày giao, mã lỗi trễ), `policies` (chính sách POL-2026-Q1), `ops_limits` & `ops_facts`. |
+| Trường then chốt quyết định tiền và lỗi hãng | `parcels[].delivered_date`, `parcels[].promised_date`, `parcels[].delay_cause`, `policies[].late`, `orders[].shipping_fee_vnd`, `orders[].goods_value_vnd`. |
+| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | `delivered_date` / `delay_cause`: Nguồn sự thật từ máy quét bưu tá khi phát hàng thành công; `policies`: Nguồn sự thật do ban Giám đốc Vận hành ban hành với khung hiệu lực. |
+| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | Ngày chuẩn ISO YYYY-MM-DD; đơn hàng nhiều kiện (`parcels`), kiện trễ nhất quyết định mức hoàn; `delivered_date` có thể trống nếu chưa phát (tính trễ đến ngày `as_of`). |
+| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | Bưu tá phát xong quên quét máy hoặc quét muộn vào cuối ngày; khách hàng tự khai độ trễ chủ quan trên ticket phóng đại; hãng cập nhật nhầm mã nguyên nhân trễ. |
+| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | "Dữ liệu độ trễ đối chiếu trực tiếp từ máy quét bưu tá trên hệ thống tracking DB với ngày cam kết trong đơn hàng, hoàn toàn không dựa vào số ngày khách tự điền." |
 
 **Tóm lại (điền vào chỗ trống):**
-Trợ lý dùng `__________`, `__________`, `__________` để giúp `__________` làm được `__________`.
-Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `__________`, `__________`.
-Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `__________`. Dấu hiệu nhìn thấy sớm nhất: `__________`.
+Trợ lý dùng `thông tin đơn hàng (orders)`, `dữ liệu theo dõi kiện hàng (parcels)`, `chính sách hoàn tiền (policies)` để giúp `khách hàng bị giao trễ` làm được `thẩm định và nhận tiền hoàn phí ship/bồi thường tự động trong 5 phút`.
+Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `parcels[].delivered_date`, `parcels[].delay_cause`.
+Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `bưu tá quét bù mã vận đơn trễ hoặc khách tự khai số ngày trễ khác tracking DB`. Dấu hiệu nhìn thấy sớm nhất: `sự chênh lệch giữa số ngày trễ model tự tính và tracking.db_delay_days`.
 
-**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `____` · đổi ngày nào `____` ·
-trường nào cho thấy `____` · con số nào của Bản tiêu chí bị ảnh hưởng `____`.
-Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `__________`
+**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `Chính sách hoàn tiền giao trễ POL-2026-Q1 hết hạn ngày 2026-03-31 và chuyển sang chính sách mới POL-2026-Q2 nâng mức bồi thường hàng giá trị cao từ 30% lên 50%` · đổi ngày nào `2026-04-01` ·
+trường nào cho thấy `policies[].effective_to và policies[].late.bonus_pct` · con số nào của Bản tiêu chí bị ảnh hưởng `cost_per_ticket_vnd_max và wrongful_refund_vnd_max`.
+Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `Quan hệ vào–ra đổi (cùng số ngày trễ nhưng số tiền hoàn tính ra thay đổi theo công thức chính sách mới). Chỉ số phát hiện: tỉ lệ không khớp phiên bản chính sách (policy_version_mismatch) hoặc biến động số tiền hoàn trung bình/ticket.`
 
 **Ví dụ một dòng (đừng chép):** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
 sự thật về ngày giao · lệch khi điểm phát quét sót hoặc nhập bù bằng tay.
@@ -308,10 +308,10 @@ Mỗi con số kèm một câu lý do, lấy từ `data/world.json` → `ops_lim
 
 | Khoá | Giá trị bàn đặt | Lý do (một câu, có số) |
 |---|---|---|
-| `business.daily_refund_cap_vnd` | | |
-| `business.cost_budget_per_ticket_vnd` | | |
-| `business.pilot_scope` (all / warehouse / percent) | | |
-| `business.roi_min` | | |
+| `business.daily_refund_cap_vnd` | 2000000 | Theo `ops_limits.daily_auto_refund_budget_vnd`: Finance quy định trần hoàn tiền tự động cả ngày tối đa là 2.000.000đ; vượt ngưỡng này bắt buộc chuyển người duyệt để kiểm soát dòng tiền. |
+| `business.cost_budget_per_ticket_vnd` | 1500 | Theo `ops_limits.max_llm_cost_per_ticket_vnd`: Chi phí suy luận LLM tối đa cho 1 ticket là 1.500đ; quá mức này phải ngắt máy chuyển người để tránh vượt ngân sách API. |
+| `business.pilot_scope` (all / warehouse / percent) | `{"mode": "all", "warehouses": [], "percent": 100}` | Thí điểm 100% các ticket thuộc phạm vi 2 kho thử nghiệm (HN và DN theo PRD v1.1) nhằm đo lường đầy đủ hành vi thực tế trước khi mở rộng ra 12 depot. |
+| `business.roi_min` | 0.2 | Cam kết lợi tức đầu tư (ROI) tối thiểu đạt 20% so với chi phí xử lý thủ công (10.000đ/ticket theo `ops_facts.manual_cost_per_ticket_vnd`). |
 
 ### B7.5 · Câu 2.10 · Cổng con người, vận hành, pháp lý + Runbook phần 1–3
 
