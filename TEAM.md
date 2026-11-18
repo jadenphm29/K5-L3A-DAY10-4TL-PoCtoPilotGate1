@@ -24,6 +24,40 @@ Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, k
 
 Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi tiêu đề thành họ tên không dấu và MSSV, ví dụ `## NguyenVanAn-20241234`).
 
+## NguyenTrongHuong-2A202603626
+
+### Phần việc phụ trách
+
+- Vai trong bàn: Sản phẩm và kinh doanh (Product & Business Lead) - Trưởng nhóm.
+- Phụ trách chính:
+  + Xác định mục tiêu cấp hệ thống của trợ lý: Phiếu A mục A1 (Câu 1.1).
+  + Đọc và phân tích kết quả khoảng tin cậy: Phiếu A mục A3 (Câu 1.5).
+  + Soạn thảo Bản tiêu chí chấp nhận và ranh giới an toàn đầu ra: Phiếu A mục A4 (Câu 1.6).
+  + Điền file `config/acceptance_criteria.json` và thực hiện ký tiêu chí niêm phong: Phiếu A mục A5.
+  + Xây dựng Bản đồ dữ liệu và phân tích rủi ro trôi dạt (drift): Phiếu B mục B3 (Câu 2.3).
+  + Thiết lập các cổng kinh doanh (ngân sách, trần hoàn tiền, phạm vi pilot, ROI): `config/operating_gates.json` và Phiếu B mục B7.4 (Câu 2.9).
+  + Chủ trì Quyết định Gate 1 v1 (B8) và v2 (C12).
+  + Soạn Specification khi gặp sự cố thẻ ở Vòng 2 (Câu 3.2).
+
+### Đóng góp cụ thể
+
+- Hoàn thành Bản tiêu chí chấp nhận với 5 ngưỡng bắt buộc khắt khe (0 đồng hoàn sai, 0 lỗi hãng oan, 0 rò rỉ PII, pass_rate >= 0.95, pass_k >= 0.90) và bảo vệ thành công ngân sách vận hành (chi phí <= 10.000đ/ticket, ROI >= 20%).
+- Trực tiếp ký và niêm phong tiêu chí (`lab10.criteria sign`) với mã commit bắt buộc `7186081` trước bất kỳ lượt đánh giá nào của nhóm, bảo đảm tính liêm chính 100% theo luật lab.
+- Định hình cổng kinh doanh vững chắc: trần hoàn tiền tự động 2.000.000đ/ngày, ngân sách LLM 1.500đ/ticket, phạm vi 100% tại 2 kho thử nghiệm (HN và DN).
+- Cùng nhóm chốt Quyết định Gate 1 · v1: Tiếp tục (Continue) dựa trên bộ bằng chứng thuyết phục ở mốc `prepared` (110/110 trials đạt chuẩn, ROI 1.24, 0 ca ùn tắc).
+
+### Bằng chứng
+
+- Mã commit ký tiêu chí: `7186081` (hash file tiêu chí: `148b6954d28951c67907b55f2df43121596cf354ec1505e502b83a86b7f5a4da`)
+- Mã commit cấu hình kinh doanh: `9ce21d6`
+- Dòng trong phiếu: Mục A1, A3, A4, A5 (Phiếu A); Mục B3, B7.4, B8 (Phiếu B).
+- Bằng chứng mốc prepared: `R-base-prepared-20261118-173351-f46094`.
+
+### Exit ticket
+
+- Một điều học được: Việc ký Bản tiêu chí chấp nhận trước khi xem dữ liệu đánh giá buộc đội ngũ phải tư duy nghiêm túc về ranh giới an toàn và chi phí kinh doanh thực tế, thay vì điều chỉnh ngưỡng theo kết quả đo để "cho qua".
+- Một điều còn chưa chắc: Khi mở rộng quy mô từ 2 depot pilot lên 12 depot toàn quốc, các ngưỡng trần ngân sách ngày và cơ chế phân bổ tải duyệt tay sẽ cần điều chỉnh động như thế nào theo mùa cao điểm sale.
+
 ## TranMinhTan-2A202603688
 
 ### Phần việc phụ trách
